@@ -32,7 +32,8 @@ function Auth({ onLogin }) {
     const endpoint = isLogin ? "login" : "register";
 
     try {
-      const response = await axios.post(`https://film-portal-api.onrender.com//${endpoint}`, formData);
+      const response = await axios.post(`https://film-portal-api.onrender.com/${endpoint}`, formData);
+      
       
       // Save user session to local storage
       const userData = { id: response.data.userId, email: formData.email };
