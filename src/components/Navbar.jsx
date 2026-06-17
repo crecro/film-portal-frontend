@@ -1,58 +1,57 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-// We add { currentUser, onLogout } as props to make the navbar dynamic
 function Navbar({ currentUser, onLogout }) {
+  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  // Hide the Navbar ONLY when the user is on the Login/Register page
   if (location.pathname === "/auth") {
     return null;
   }
 
+  // Helper to close menu when a link is clicked
+  const closeMenu = () => setIsOpen(false);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid px-5">
-        <Link className="navbar-brand" style={{ textDecoration: "none" }} to="/portal">
+        <Link className="navbar-brand" style={{ textDecoration: "none" }} to="/portal" onClick={closeMenu}>
           FILM.
         </Link>
         
-        {/* MOBILE HAMBURGER BUTTON (Important for responsiveness) */}
+        {/* MANUAL TOGGLE BUTTON */}
         <button 
           className="navbar-toggler" 
           type="button" 
-          data-bs-toggle="collapse" 
-          data-bs-target="#navbarNav" 
-          aria-controls="navbarNav" 
-          aria-expanded="false" 
-          aria-label="Toggle navigation"
+          onClick={() => setIsOpen(!isOpen)} // Toggles state
+          aria-expanded={isOpen}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* COLLAPSIBLE MENU */}
-        <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-          <ul className="navbar-nav">
+        {/* DYNAMIC CLASS: Adds 'show' to the collapse div if isOpen is true */}
+        <div className={`collapse navbar-collapse ${isOpen ? "show" : ""}`} id="navbarNav">
+          <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/portal">Discover</Link>
+              <Link className="nav-link" to="/portal" onClick={closeMenu}>Discover</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/collections">Collections</Link>
+              <Link className="nav-link" to="/collections" onClick={closeMenu}>Collections</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/reviews">Reviews</Link>
+              <Link className="nav-link" to="/reviews" onClick={closeMenu}>Reviews</Link>
             </li>
             
-            {/* DYNAMIC LOGIN/LOGOUT BUTTON */}
             <li className="nav-item ms-lg-3">
               {currentUser ? (
                 <button 
                   className="btn btn-outline-danger btn-sm mt-1" 
-                  onClick={onLogout}
+                  onClick={() => { onLogout(); closeMenu(); }}
                 >
                   Logout
                 </button>
               ) : (
-                <Link className="btn btn-outline-light btn-sm mt-1" to="/auth">Login</Link>
+                <Link className="btn btn-outline-light btn-sm mt-1" to="/auth" onClick={closeMenu}>Login</Link>
               )}
             </li>
           </ul>
