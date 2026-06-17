@@ -1,0 +1,72 @@
+.home-container {
+  height: 100vh;
+  width: 100vw;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Creates a cool parallax effect */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-overlay {
+  background: rgba(11, 19, 43, 0.85); /* Deep Navy overlay for extreme contrast */
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.home-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 20px;
+  text-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+}
+
+.home-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.5rem;
+  color: #F0EDEE; /* High contrast off-white */
+  max-width: 600px;
+  margin-bottom: 50px;
+}
+
+.interactive-enter-btn {
+  position: relative;
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #FFFFFF;
+  background-color: transparent;
+  border: 2px solid #E63946; /* Striking Red from the seats */
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.home-container {
+  height: 100vh;
+  width: 100vw;
+  /* ADD THIS LINE FOR THE IMAGE */
+  background-image: url('https://i.pinimg.com/1200x/6d/b9/d1/6db9d11ffa004244c64f522c5c029320.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Creates a cool parallax effect */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The rest of your Home.css remains exactly the same... */
+
+.interactive-enter-btn:hover {
+  background-color: #E63946;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(230, 57, 70, 0.6);
+}

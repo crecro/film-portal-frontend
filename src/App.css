@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400&display=swap');
+
+:root {
+  --bg: #17000B;
+  --text: #FFFFFF;
+  --accent: #529c54;
+}
+
+/* Global Reset */
+* { box-sizing: border-box; }
+body, #root { 
+  background-color: var(--bg) !important; 
+  color: var(--text) !important; 
+  font-family: 'Playfair Display', serif; 
+  margin: 0; 
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, p, div { color: var(--text) !important; }
+.hero-title { font-weight: 800; }
+
+/* NAVBAR & LINKS - Forces Navigation Text to be White */
+a, .nav-link, .navbar-brand { color: #FFFFFF !important; text-decoration: none; }
+.nav-link:hover { color: var(--accent) !important; }
+
+/* FORMS - Forces Input Text and Placeholders to be White */
+.form-control { background-color: #2b0015 !important; color: var(--text) !important; border: 1px solid var(--accent); }
+::placeholder { color: rgba(255, 255, 255, 0.6) !important; opacity: 1; }
+select option { background-color: #2b0015; color: #FFFFFF; }
+
+/* BUTTONS - Forces Button Text to be Visible */
+.btn-dark { background-color: #000 !important; color: #FFFFFF !important; border: 1px solid var(--accent); }
+.btn-outline-light { color: #FFFFFF !important; border-color: #FFFFFF !important; }
+.btn-outline-light:hover { background-color: #FFFFFF !important; color: #17000B !important; }
+.btn-save { background-color: var(--accent) !important; color: #FFFFFF !important; border: none; }
+.btn-light { background-color: #FFFFFF !important; color: #000000 !important; font-weight: bold; }
+
+/* RECOMMENDATIONS PANEL */
+.recommendations-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+}
+.recommendations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+/* REPLACE THE ACCENT COLOR AT THE TOP OF App.css WITH THIS */
+:root {
+  --bg: #17000B;
+  --text: #FFFFFF;
+  --accent: #C9A24B; /* Changed from ugly green to Cinematic Gold */
+}
+
+/* --------------------------------- */
+/* NEW PREMIUM AESTHETICS            */
+/* Add this to the bottom of App.css */
+/* --------------------------------- */
+
+/* Genre Grouping Headers */
+.genre-heading {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  color: var(--accent) !important;
+}
+.genre-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+  opacity: 0.5;
+}
+
+/* Beautiful Review Cards */
+.review-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(201, 162, 75, 0.3); /* Soft Gold border */
+  border-radius: 12px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.review-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+.review-img {
+  width: 90px;
+  height: 135px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.review-text {
+  font-style: italic;
+  color: #dddddd !important;
+  line-height: 1.6;
+}
+/* --------------------------------- */
+/* SCALE UP SIZES & TYPOGRAPHY       */
+/* --------------------------------- */
+
+/* Widens the portal so 4-column images stretch and become much larger */
+.container { 
+  max-width: 1400px !important; 
+}
+
+/* Base text size increase */
+body, p, input, select, textarea { 
+  font-size: 1.15rem !important; 
+}
+
+/* Headings scale up */
+h1 { font-size: 3.5rem !important; }
+h2 { font-size: 2.8rem !important; }
+h3 { font-size: 2.2rem !important; }
+.hero-title { font-size: 4rem !important; }
+
+/* Genre Group Headers */
+.genre-heading { 
+  font-size: 3rem !important; 
+  margin-bottom: 0.5rem !important;
+}
+
+/* Film Card text sizing */
+.film-title { 
+  font-size: 1.3rem !important; 
+  margin-top: 15px !important;
+  margin-bottom: 5px !important;
+}
+.genre { 
+  font-size: 1rem !important; 
+  margin-bottom: 12px !important;
+}
+
+/* Button sizing */
+.btn { 
+  font-size: 1rem !important; 
+  padding: 10px 20px !important; 
+}
+  
+
