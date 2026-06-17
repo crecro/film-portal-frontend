@@ -34,7 +34,7 @@ function App() {
   }, []);
 
   const fetchFilms = () => {
-    axios.get("https://film-portal-api.onrender.com//films").then((res) => setFilms(res.data));
+    axios.get("https://film-portal-api.onrender.com/films").then((res) => setFilms(res.data));
   };
 
   // ---> THE MISSING FUNCTION IS RESTORED HERE <---

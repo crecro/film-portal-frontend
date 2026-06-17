@@ -6,7 +6,8 @@ function AddFilm({ fetchFilms }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post("https://film-portal-api.onrender.com//films", { ...film, film_url: film.film_url || "#" })
+    console.log("Submit button clicked! Form data:", formData);
+    axios.post("https://film-portal-api.onrender.com/films", { ...film, film_url: film.film_url || "#" })
       .then(() => {
         alert("Film Added!");
         setFilm({ title: "", genre: "", director: "", year_released: "", description: "", film_url: "" });
