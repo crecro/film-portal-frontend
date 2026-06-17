@@ -6,37 +6,54 @@ function Reviews({ currentUser, films }) {
   const [formData, setFormData] = useState({ film_id: "", rating: "5", review_text: "" });
 
   const fetchReviews = () => {
-    axios.get("https://film-portal-api.onrender.com/reviews").then(res => setReviews(res.data));
+    axios.get("https://film-portal-api.onrender.com/reviews")
+      .then(res => setReviews(res.data))
+      .catch(err => console.error("Error fetching reviews:", err));
   };
 
-  useEffect(() => { fetchReviews(); }, []);
+  useEffect(() => { 
+    fetchReviews(); 
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // 1. Check if a film is selected
+    // DEBUG: Verify the button was clicked
+    console.log("DEBUG: handleSubmit triggered!");
+    
+    // DEBUG: Check user state
+    if (!currentUser || !currentUser.id) {
+      console.error("CRITICAL: currentUser or currentUser.id is undefined!");
+      alert("You must be logged in to publish a review.");
+      return;
+    }
+
+    // Validation
     if (!formData.film_id) {
       alert("Please select a film to review!");
       return;
     }
     
-    // 2. Check if text is written
     if (!formData.review_text.trim()) {
       alert("Please write a review before publishing!");
       return;
     }
 
-    // 3. Send to backend with error handling
+    // Send to backend
+    console.log("DEBUG: Sending data to API:", { user_id: currentUser.id, ...formData });
+
     axios.post("https://film-portal-api.onrender.com/reviews", { 
       user_id: currentUser.id, 
       ...formData 
     })
-      .then(() => {
+      .then((response) => {
+        console.log("DEBUG: Server Success:", response.data);
+        alert("Review published!");
         setFormData({ film_id: "", rating: "5", review_text: "" });
         fetchReviews(); // Refresh the feed
       })
       .catch((err) => {
-        console.error("Database Error:", err);
+        console.error("DEBUG: API Call Failed:", err);
         alert("Failed to publish. Check the F12 console for details!");
       });
   };
@@ -55,6 +72,7 @@ function Reviews({ currentUser, films }) {
                 <option value="" disabled>Select a Film...</option>
                 {films.map(f => <option key={f.id} value={f.id}>{f.title}</option>)}
               </select>
+              
               <select className="form-control mb-3" onChange={(e) => setFormData({...formData, rating: e.target.value})} value={formData.rating}>
                 <option value="5">⭐⭐⭐⭐⭐ Masterpiece</option>
                 <option value="4">⭐⭐⭐⭐ Great</option>
@@ -62,30 +80,30 @@ function Reviews({ currentUser, films }) {
                 <option value="2">⭐⭐ Fair</option>
                 <option value="1">⭐ Poor</option>
               </select>
+              
               <textarea className="form-control mb-3" rows="4" placeholder="Write your review..." onChange={(e) => setFormData({...formData, review_text: e.target.value})} value={formData.review_text}></textarea>
+              
               <button type="submit" className="btn btn-outline-light w-100">PUBLISH REVIEW</button>
             </form>
           </div>
         </div>
 
-        {/* GLOBAL FEED (BEAUTIFUL CARDS) */}
+        {/* GLOBAL FEED */}
         <div className="col-md-8">
           <h3 style={{ fontWeight: "800" }}>Recent Activity</h3>
           <div className="mt-3">
             {reviews.length === 0 && <p>No reviews yet. Be the first!</p>}
             {reviews.map(review => (
-              <div key={review.id} className="review-card d-flex mb-4 p-4">
-                <img src={review.image_url && review.image_url !== "N/A" ? review.image_url : "https://placehold.co/100x150"} alt={review.title} className="review-img" />
+              <div key={review.id} className="review-card d-flex mb-4 p-4" style={{borderBottom: "1px solid #444"}}>
+                <img src={review.image_url && review.image_url !== "N/A" ? review.image_url : "https://placehold.co/100x150"} alt={review.title} className="review-img" style={{width: "100px"}} />
                 <div className="ms-4 w-100">
                   <h4 className="mb-2" style={{ fontSize: "1.6rem" }}>{review.title}</h4>
                   <div className="mb-3" style={{ color: "var(--accent)", fontSize: "1.2rem", letterSpacing: "2px" }}>
                     {Array(parseInt(review.rating)).fill("★").join("")}{Array(5 - parseInt(review.rating)).fill("☆").join("")}
                   </div>
                   <p className="review-text" style={{ fontSize: "1.1rem" }}>"{review.review_text}"</p>
-                  
-                  {/* FIX: Removed text-muted, added explicit white color and opacity */}
                   <div className="mt-3" style={{ fontSize: "0.95rem", textTransform: "uppercase", color: "#FFFFFF", opacity: 0.7 }}>
-                    Reviewed by {review.email.split('@')[0]}
+                    Reviewed by {review.email ? review.email.split('@')[0] : "Anonymous"}
                   </div>
                 </div>
               </div>
