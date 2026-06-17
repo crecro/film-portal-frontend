@@ -6,7 +6,7 @@ function Reviews({ currentUser, films }) {
   const [formData, setFormData] = useState({ film_id: "", rating: "5", review_text: "" });
 
   const fetchReviews = () => {
-    axios.get("https://film-portal-api.onrender.com//reviews").then(res => setReviews(res.data));
+    axios.get("https://film-portal-api.onrender.com/reviews").then(res => setReviews(res.data));
   };
 
   useEffect(() => { fetchReviews(); }, []);
@@ -27,7 +27,7 @@ function Reviews({ currentUser, films }) {
     }
 
     // 3. Send to backend with error handling
-    axios.post("https://film-portal-api.onrender.com//reviews", { 
+    axios.post("https://film-portal-api.onrender.com/reviews", { 
       user_id: currentUser.id, 
       ...formData 
     })

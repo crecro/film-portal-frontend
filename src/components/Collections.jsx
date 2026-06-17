@@ -7,7 +7,7 @@ function Collections({ currentUser }) {
 
   useEffect(() => {
     if (currentUser) {
-      axios.get(`https://film-portal-api.onrender.com//collections/${currentUser.id}`)
+      axios.get(`https://film-portal-api.onrender.com/collections/${currentUser.id}`)
         .then(res => setMyFilms(res.data))
         .catch(err => console.log(err));
     }

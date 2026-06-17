@@ -6,7 +6,7 @@ function FilmCard({ film, getRecommendations, currentUser }) {
 
   const saveToCollection = () => {
     if (!currentUser) return;
-    axios.post("http://localhost:5000/collections", {
+    axios.post("https://film-portal-api.onrender.com/collections", {
       user_id: currentUser.id,
       film_id: film.id
     })
