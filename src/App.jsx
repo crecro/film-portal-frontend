@@ -13,7 +13,6 @@ import Reviews from "./components/Reviews";
 import "./App.css";
 import "./components/Home.css";
 
-// The massive base list of genres
 const BASE_GENRES = [
   "Action", "Adventure", "Animation", "Biography", "Comedy", "Crime", "Documentary", 
   "Drama", "Family", "Fantasy", "Film Noir", "History", "Horror", "Music", "Musical", 
@@ -37,7 +36,12 @@ function App() {
     axios.get("https://film-portal-api.onrender.com/films").then((res) => setFilms(res.data));
   };
 
-  // ---> THE MISSING FUNCTION IS RESTORED HERE <---
+  const handleLogout = () => {
+    localStorage.removeItem("filmUser");
+    setCurrentUser(null);
+    window.location.href = "/auth";
+  };
+
   const getRecommendations = (id, title) => {
     axios.get(`https://film-portal-api.onrender.com/films/recommend/${id}`).then(res => {
       setRecommendations({ title: title, data: res.data });
@@ -54,7 +58,9 @@ function App() {
 
   return (
     <Router>
-      {currentUser && <Navbar />}
+      {/* Navbar now receives current user and the logout function */}
+      {currentUser && <Navbar currentUser={currentUser} onLogout={handleLogout} />}
+      
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth" element={currentUser ? <Navigate to="/portal" /> : <Auth onLogin={setCurrentUser} />} />
@@ -69,16 +75,15 @@ function App() {
               {dynamicGenres.map(g => <option key={g} value={g}>{g}</option>)}
             </select>
 
-            {/* CATEGORIZED RECOMMENDATIONS PANEL */}
+            {/* RECOMMENDATIONS PANEL */}
             {recommendations && recommendations.data && (
-              <div className="recommendations-panel">
+              <div className="recommendations-panel mb-5">
                 <div className="recommendations-header mb-4">
                   <h3 style={{ margin: 0, fontWeight: "800" }}>Because you selected {recommendations.title}</h3>
                   <button className="btn btn-sm btn-outline-light" onClick={() => setRecommendations(null)}>Close</button>
                 </div>
                 
-                {/* MORE BY DIRECTOR */}
-                {recommendations.data.byDirector && recommendations.data.byDirector.length > 0 && (
+                {recommendations.data.byDirector?.length > 0 && (
                   <div className="mb-5">
                     <h5 style={{ color: "var(--accent)", letterSpacing: "1px", textTransform: "uppercase" }}>
                       More by {recommendations.data.director}
@@ -93,8 +98,7 @@ function App() {
                   </div>
                 )}
 
-                {/* MORE IN GENRE */}
-                {recommendations.data.byGenre && recommendations.data.byGenre.length > 0 && (
+                {recommendations.data.byGenre?.length > 0 && (
                   <div>
                     <h5 style={{ color: "var(--accent)", letterSpacing: "1px", textTransform: "uppercase" }}>
                       More in {recommendations.data.genre}
@@ -108,18 +112,10 @@ function App() {
                     </div>
                   </div>
                 )}
-
-                {/* FALLBACK */}
-                {(!recommendations.data.byDirector || recommendations.data.byDirector.length === 0) && 
-                 (!recommendations.data.byGenre || recommendations.data.byGenre.length === 0) && (
-                  <p style={{ fontStyle: "italic", opacity: 0.7 }}>
-                    No similar films found in your database yet. Try adding some more!
-                  </p>
-                )}
               </div>
             )}
 
-            {/* MAIN FILM GRID */}
+            {/* MAIN GRID - Uses col-6 (mobile) and col-md-3 (desktop) */}
             {(search !== "" || selectedGenre !== "All") ? (
               <div className="row">
                 {filtered.map(f => (
@@ -132,7 +128,6 @@ function App() {
               dynamicGenres.map(genre => {
                 const genreFilms = films.filter(f => f.genre === genre);
                 if (genreFilms.length === 0) return null;
-
                 return (
                   <div key={genre} className="genre-section mb-5">
                     <div className="d-flex align-items-center mb-4">

@@ -89,8 +89,8 @@ function Reviews({ currentUser, films }) {
         </div>
 
         {/* GLOBAL FEED */}
-        <div className="col-md-8">
-          <h3 style={{ fontWeight: "800" }}>Recent Activity</h3>
+<div className="col-12 col-md-8">
+            <h3 style={{ fontWeight: "800" }}>Recent Activity</h3>
           <div className="mt-3">
             {reviews.length === 0 && <p>No reviews yet. Be the first!</p>}
             {reviews.map(review => (
