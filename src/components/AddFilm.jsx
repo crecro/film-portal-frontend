@@ -2,16 +2,43 @@ import { useState } from "react";
 import axios from "axios";
 
 function AddFilm({ fetchFilms }) {
-  const [film, setFilm] = useState({ title: "", genre: "", director: "", year_released: "", description: "", film_url: "" });
+  // Your state is named 'film'
+  const [film, setFilm] = useState({ 
+    title: "", 
+    genre: "", 
+    director: "", 
+    year_released: "", 
+    description: "", 
+    film_url: "" 
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submit button clicked! Form data:", formData);
-    axios.post("https://film-portal-api.onrender.com/films", { ...film, film_url: film.film_url || "#" })
+    
+    // FIXED: Changed 'formData' to 'film'
+    console.log("Submit button clicked! Form data:", film); 
+
+    axios.post("https://film-portal-api.onrender.com/films", { 
+      ...film, 
+      film_url: film.film_url || "#" 
+    })
       .then(() => {
         alert("Film Added!");
-        setFilm({ title: "", genre: "", director: "", year_released: "", description: "", film_url: "" });
+        // Reset the state to clear the form
+        setFilm({ 
+          title: "", 
+          genre: "", 
+          director: "", 
+          year_released: "", 
+          description: "", 
+          film_url: "" 
+        });
+        // Refresh the film list
         fetchFilms(); 
+      })
+      .catch((err) => {
+        console.error("Error adding film:", err);
+        alert("Failed to add film. Check the console for details.");
       });
   };
 
@@ -30,4 +57,5 @@ function AddFilm({ fetchFilms }) {
     </div>
   );
 }
+
 export default AddFilm;
