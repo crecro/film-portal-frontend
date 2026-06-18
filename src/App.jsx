@@ -49,16 +49,30 @@ function App() {
     });
   };
 
-  const dynamicGenres = [...new Set([...BASE_GENRES, ...films.map(f => f.genre).filter(g => g)])].sort();
+  // --- BUG FIX: THE GENRE NORMALIZER ---
+  // This removes accidental spaces (e.g. "Action ") and fixes capitalization (e.g. "action")
+  const normalizeGenre = (rawGenre) => {
+    if (!rawGenre) return "";
+    const clean = rawGenre.trim();
+    // Check if it matches a base genre regardless of case
+    const baseMatch = BASE_GENRES.find(bg => bg.toLowerCase() === clean.toLowerCase());
+    return baseMatch ? baseMatch : clean; // Forces perfect matching
+  };
 
+  // Use the normalizer when building the master list of genres
+  const dynamicGenres = [...new Set([
+    ...BASE_GENRES, 
+    ...films.map(f => normalizeGenre(f.genre)).filter(g => g !== "")
+  ])].sort();
+
+  // Use the normalizer when filtering the grid
   const filtered = films.filter(f => 
     f.title?.toLowerCase().includes(search.toLowerCase()) && 
-    (selectedGenre === "All" || f.genre === selectedGenre)
+    (selectedGenre === "All" || normalizeGenre(f.genre) === selectedGenre)
   );
 
   return (
     <Router>
-      {/* Navbar now receives current user and the logout function */}
       {currentUser && <Navbar currentUser={currentUser} onLogout={handleLogout} />}
       
       <Routes>
@@ -115,7 +129,7 @@ function App() {
               </div>
             )}
 
-            {/* MAIN GRID - Uses col-6 (mobile) and col-md-3 (desktop) */}
+            {/* MAIN GRID */}
             {(search !== "" || selectedGenre !== "All") ? (
               <div className="row">
                 {filtered.map(f => (
@@ -126,8 +140,11 @@ function App() {
               </div>
             ) : (
               dynamicGenres.map(genre => {
-                const genreFilms = films.filter(f => f.genre === genre);
+                // BUG FIX: Use the normalizer here so all "Action" films fall into the same exact bucket
+                const genreFilms = films.filter(f => normalizeGenre(f.genre) === genre);
+                
                 if (genreFilms.length === 0) return null;
+                
                 return (
                   <div key={genre} className="genre-section mb-5">
                     <div className="d-flex align-items-center mb-4">
