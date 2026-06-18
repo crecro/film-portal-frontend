@@ -3,8 +3,6 @@ import axios from "axios";
 
 function FilmCard({ film, currentUser, getRecommendations }) {
   const [showDescription, setShowDescription] = useState(false);
-  
-  // NEW: State for admin editing
   const [isEditing, setIsEditing] = useState(false);
   const [editDesc, setEditDesc] = useState(film.description || "");
 
@@ -24,32 +22,30 @@ function FilmCard({ film, currentUser, getRecommendations }) {
     getRecommendations(film.id, film.title);
   };
 
-  // NEW: Admin Delete Function
   const handleDelete = async (e) => {
     e.stopPropagation();
     if (window.confirm(`Are you sure you want to completely delete "${film.title}"?`)) {
       try {
         await axios.delete(`https://film-portal-api.onrender.com/films/${film.id}`);
-        window.location.reload(); // Refresh the page to show it's gone
+        window.location.reload(); 
       } catch (err) { alert("Failed to delete."); }
     }
   };
 
-  // NEW: Admin Edit Description Function
   const handleUpdateDesc = async (e) => {
     e.stopPropagation();
     try {
       await axios.put(`https://film-portal-api.onrender.com/films/${film.id}`, { description: editDesc });
       alert("Description updated!");
       setIsEditing(false);
-      film.description = editDesc; // Update it locally so we see changes instantly
+      film.description = editDesc; 
     } catch (err) { alert("Failed to update description."); }
   };
 
   return (
     <div className="card film-card mb-4 bg-transparent border-0 text-light">
       
-      {/* Clicking toggles description, unless we are currently editing */}
+      {/* Clicking toggles the detail dropdown */}
       <div onClick={() => !isEditing && setShowDescription(!showDescription)} style={{ cursor: "pointer" }}>
         <img 
           src={film.image_url && film.image_url !== "N/A" ? film.image_url : "https://placehold.co/300x450"} 
@@ -68,7 +64,7 @@ function FilmCard({ film, currentUser, getRecommendations }) {
         <button className="btn btn-outline-light btn-sm" onClick={handleRecommend}>Similar</button>
         <button className="btn btn-sm" style={{ backgroundColor: "#d4af37", color: "black", fontWeight: "500" }} onClick={handleSave}>+ Save</button>
         
-        {/* NEW: ONLY SHOW IF USER IS ADMIN */}
+        {/* ADMIN CONTROLS */}
         {currentUser && currentUser.isAdmin && (
           <>
             <button className="btn btn-sm btn-outline-info" onClick={(e) => { e.stopPropagation(); setIsEditing(!isEditing); setShowDescription(true); }}>Edit</button>
@@ -77,14 +73,24 @@ function FilmCard({ film, currentUser, getRecommendations }) {
         )}
       </div>
 
-      {/* THE DROPDOWN DESCRIPTION & EDITOR */}
+      {/* THE DROPDOWN DETAILS & EDITOR */}
       {(showDescription || isEditing) && (
         <div className="mt-2 p-3 shadow-sm" style={{ backgroundColor: "rgba(255,255,255,0.05)", borderRadius: "8px", fontSize: "0.85rem", borderLeft: "3px solid #d4af37", lineHeight: "1.5" }}>
           
+          {/* NEW: METADATA SECTION */}
+          <div className="mb-2 pb-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+            <div><strong style={{ color: "#d4af37" }}>Director:</strong> {film.director || "Unknown"}</div>
+            <div><strong style={{ color: "#d4af37" }}>Genre:</strong> {film.genre || "N/A"}</div>
+            <div><strong style={{ color: "#d4af37" }}>Year:</strong> {film.year_released || "N/A"}</div>
+            {film.rating && <div><strong style={{ color: "#d4af37" }}>Rating:</strong> {film.rating}/10</div>}
+          </div>
+
+          {/* DESCRIPTION / EDITING SECTION */}
           {isEditing ? (
             <div onClick={(e) => e.stopPropagation()}>
+              <strong style={{ color: "#d4af37" }}>Edit Synopsis:</strong>
               <textarea 
-                className="form-control mb-2" 
+                className="form-control mb-2 mt-1" 
                 rows="4" 
                 value={editDesc} 
                 onChange={(e) => setEditDesc(e.target.value)} 
@@ -94,7 +100,10 @@ function FilmCard({ film, currentUser, getRecommendations }) {
               <button className="btn btn-sm btn-secondary" onClick={() => setIsEditing(false)}>Cancel</button>
             </div>
           ) : (
-            film.description ? film.description : "No synopsis available for this film."
+            <div>
+              <strong style={{ color: "#d4af37" }}>Synopsis:</strong><br/>
+              <span style={{ color: "#eee" }}>{film.description ? film.description : "No synopsis available for this film."}</span>
+            </div>
           )}
 
         </div>
