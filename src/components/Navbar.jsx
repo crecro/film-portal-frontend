@@ -9,27 +9,25 @@ function Navbar({ currentUser, onLogout }) {
     return null;
   }
 
-  // Helper to close menu when a link is clicked
   const closeMenu = () => setIsOpen(false);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    // ADDED sticky-top HERE, plus a zIndex so it stays above the film images
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" style={{ zIndex: 1050, borderBottom: "1px solid #333" }}>
       <div className="container-fluid px-5">
         <Link className="navbar-brand" style={{ textDecoration: "none" }} to="/portal" onClick={closeMenu}>
           FILM.
         </Link>
         
-        {/* MANUAL TOGGLE BUTTON */}
         <button 
           className="navbar-toggler" 
           type="button" 
-          onClick={() => setIsOpen(!isOpen)} // Toggles state
+          onClick={() => setIsOpen(!isOpen)} 
           aria-expanded={isOpen}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* DYNAMIC CLASS: Adds 'show' to the collapse div if isOpen is true */}
         <div className={`collapse navbar-collapse ${isOpen ? "show" : ""}`} id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
