@@ -3,103 +3,101 @@ import axios from "axios";
 
 function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); // Clear errors when user types
-  };
-
-  // --- FORM VALIDATION FILTERS ---
-  const validateForm = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address.");
-      return false;
-    }
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      return false;
-    }
-    return true;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
-    const endpoint = isLogin ? "login" : "register";
+    setError(""); // Clear any old errors
 
     try {
-      const response = await axios.post(`https://film-portal-api.onrender.com/${endpoint}`, formData);
-      
-      
-      // Save user session to local storage
-      const userData = { id: response.data.userId, email: formData.email };
-      localStorage.setItem("filmUser", JSON.stringify(userData));
-      
-      // Update parent component
-      onLogin(userData);
-      
+      if (isLogin) {
+        // --- LOGIN FLOW ---
+        const res = await axios.post("https://film-portal-api.onrender.com/login", { 
+          email, 
+          password 
+        });
+        
+        // Save user to local storage so they stay logged in if they refresh
+        localStorage.setItem("filmUser", JSON.stringify(res.data));
+        
+        // This function tells App.jsx the user is logged in, which redirects to /portal
+        onLogin(res.data);
+        
+      } else {
+        // --- REGISTER FLOW ---
+        await axios.post("https://film-portal-api.onrender.com/register", { 
+          email, 
+          password 
+        });
+        
+        // Alert the user
+        alert("Registration successful! You can now log in.");
+        
+        // THE FIX: Do NOT auto-login. Instead, clear the form and switch to Login view
+        setEmail("");
+        setPassword("");
+        setIsLogin(true); 
+      }
     } catch (err) {
+      // If the backend sends an error (like "User not found" or "Invalid credentials")
       setError(err.response?.data || "An error occurred. Please try again.");
     }
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
-      <div 
-        className="p-5" 
-        style={{ 
-          backgroundColor: "rgba(255,255,255,0.03)", 
-          border: "1px solid var(--accent)", 
-          borderRadius: "12px",
-          width: "100%",
-          maxWidth: "500px" 
-        }}
-      >
-        <h2 className="mb-4 text-center" style={{ fontFamily: "'Playfair Display', serif", fontWeight: "800", color: "var(--accent)" }}>
-          {isLogin ? "Welcome Back." : "Join the Club."}
+    <div className="container mt-5" style={{ maxWidth: "400px" }}>
+      <div className="card p-4 shadow-lg" style={{ backgroundColor: "#1a1a1a", border: "1px solid var(--accent)", color: "white" }}>
+        <h2 className="text-center mb-4" style={{ fontWeight: "800" }}>
+          {isLogin ? "Welcome Back" : "Join the Portal"}
         </h2>
-
-        {error && <div className="alert alert-danger" style={{ fontSize: "1rem", borderRadius: "8px" }}>{error}</div>}
+        
+        {error && <div className="alert alert-danger p-2 text-center">{error}</div>}
 
         <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            name="email"
-            className="form-control mb-4"
-            placeholder="Email Address"
-            value={formData.email}
-            onChange={handleChange}
-            style={{ padding: "12px" }}
-          />
-          <input
-            type="password"
-            name="password"
-            className="form-control mb-4"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            style={{ padding: "12px" }}
-          />
+          <div className="mb-3">
+            <label className="form-label">Email address</label>
+            <input 
+              type="email" 
+              className="form-control" 
+              required 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+            />
+          </div>
           
-          <button type="submit" className="btn btn-outline-light w-100 mb-4" style={{ padding: "12px", letterSpacing: "2px", fontWeight: "bold" }}>
-            {isLogin ? "SIGN IN" : "CREATE ACCOUNT"}
+          <div className="mb-4">
+            <label className="form-label">Password</label>
+            <input 
+              type="password" 
+              className="form-control" 
+              required 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+            />
+          </div>
+          
+          <button type="submit" className="btn btn-outline-light w-100 mb-3">
+            {isLogin ? "LOGIN" : "REGISTER"}
           </button>
         </form>
 
-        <div className="text-center" style={{ fontSize: "1rem", color: "#cccccc" }}>
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <span 
-            style={{ color: "var(--accent)", cursor: "pointer", fontWeight: "bold" }}
-            onClick={() => setIsLogin(!isLogin)}
+        <div className="text-center mt-2">
+          <p className="mb-0" style={{ fontSize: "0.9rem", color: "#ccc" }}>
+            {isLogin ? "Don't have an account?" : "Already have an account?"}
+          </p>
+          <button 
+            className="btn btn-link text-decoration-none" 
+            style={{ color: "var(--accent)" }}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError(""); // Clear errors when switching tabs
+            }}
           >
-            {isLogin ? "Register here." : "Log in."}
-          </span>
+            {isLogin ? "Create an account" : "Log in instead"}
+          </button>
         </div>
-
       </div>
     </div>
   );
