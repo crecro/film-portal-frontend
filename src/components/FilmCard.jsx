@@ -1,57 +1,84 @@
-import axios from "axios";
 import { useState } from "react";
+import axios from "axios";
 
-function FilmCard({ film, getRecommendations, currentUser }) {
-  const [saved, setSaved] = useState(false);
+function FilmCard({ film, currentUser, getRecommendations }) {
+  // NEW: State to track if the description is visible or hidden
+  const [showDescription, setShowDescription] = useState(false);
 
-  const saveToCollection = () => {
-    if (!currentUser) return;
-    axios.post("https://film-portal-api.onrender.com/collections", {
-      user_id: currentUser.id,
-      film_id: film.id
-    })
-      .then(() => setSaved(true))
-      .catch((err) => console.error("Error saving to collection:", err));
+  const handleSave = async (e) => {
+    e.stopPropagation(); // Prevents the click from accidentally toggling the description
+    try {
+      await axios.post("https://film-portal-api.onrender.com/collections", {
+        user_id: currentUser.id,
+        film_id: film.id
+      });
+      alert("Saved to collections!");
+    } catch (err) {
+      console.error(err);
+      alert("Could not save to collections.");
+    }
   };
 
-  // Note: this card no longer carries its own col-6/col-md-3 classes.
-  // The parent grid (App.jsx) already wraps each card in those grid-column
-  // classes, so having them here too was nesting a 25%-wide column inside
-  // another 25%-wide column — shrinking every card down to a sliver.
+  const handleRecommend = (e) => {
+    e.stopPropagation(); // Prevents the click from accidentally toggling the description
+    getRecommendations(film.id, film.title);
+  };
+
   return (
-    <div className="film-card-container mb-5">
-      <img
-        src={film.image_url && film.image_url !== "N/A" ? film.image_url : "https://placehold.co/300x450"}
-        alt={film.title}
-        className="img-fluid"
-      />
-
-      <div className="mt-2">
-        <div className="film-title">{film.title}</div>
-        <div className="genre">{film.genre}</div>
-
-        <div className="mt-2 d-flex flex-wrap gap-2">
-          {getRecommendations && (
-            <button className="btn btn-sm btn-outline-light" onClick={() => getRecommendations(film.id, film.title)}>
-              Similar
-            </button>
-          )}
-
-          {film.film_url && film.film_url !== "#" && (
-            <a href={film.film_url} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-dark">
-              Watch
-            </a>
-          )}
-
-          <button
-            className="btn btn-sm btn-save"
-            onClick={saveToCollection}
-            disabled={saved}
-          >
-            {saved ? "Saved" : "+ Save"}
-          </button>
+    <div className="card film-card mb-4 bg-transparent border-0 text-light">
+      
+      {/* WRAPPER: Clicking this area toggles the description */}
+      <div 
+        onClick={() => setShowDescription(!showDescription)} 
+        style={{ cursor: "pointer" }}
+      >
+        <img 
+          src={film.image_url && film.image_url !== "N/A" ? film.image_url : "https://placehold.co/300x450"} 
+          className="card-img-top" 
+          alt={film.title} 
+          style={{ borderRadius: "8px", objectFit: "cover", height: "100%", border: "1px solid #333" }}
+        />
+        <div className="card-body px-0 pb-1">
+          <h5 className="card-title mb-1" style={{ fontSize: "1.1rem", fontWeight: "bold" }}>{film.title}</h5>
+          <p className="card-text mb-2" style={{ fontSize: "0.9rem", color: "#ccc" }}>{film.genre}</p>
         </div>
       </div>
+      
+      {/* THE BUTTONS */}
+      <div className="d-flex gap-2 mb-2">
+        <button 
+          className="btn btn-outline-light btn-sm" 
+          style={{ padding: "4px 16px" }}
+          onClick={handleRecommend}
+        >
+          Similar
+        </button>
+        <button 
+          className="btn btn-sm" 
+          style={{ backgroundColor: "#d4af37", color: "black", fontWeight: "500", padding: "4px 16px" }}
+          onClick={handleSave}
+        >
+          + Save
+        </button>
+      </div>
+
+      {/* THE DROPDOWN DESCRIPTION */}
+      {/* This only renders if showDescription is TRUE */}
+      {showDescription && (
+        <div 
+          className="mt-2 p-3 shadow-sm" 
+          style={{ 
+            backgroundColor: "rgba(255,255,255,0.05)", 
+            borderRadius: "8px", 
+            fontSize: "0.85rem", 
+            borderLeft: "3px solid #d4af37",
+            lineHeight: "1.5"
+          }}
+        >
+          {film.description ? film.description : "No synopsis available for this film."}
+        </div>
+      )}
+
     </div>
   );
 }
